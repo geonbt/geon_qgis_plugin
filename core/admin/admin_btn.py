@@ -1676,7 +1676,6 @@ class GwAdminButton:
             }
             response = requests.request("GET", url, headers=headers, data=payload)
             rows = json.loads(response.text)
-            print(rows)
             for row in rows:
                 elem = [row, row]
                 self.geon_projects.append(elem)            
@@ -1684,7 +1683,6 @@ class GwAdminButton:
             print('that doesnt work')
             elem = ['','']
             self.geon_projects.append(elem)
-            print(self.geon_projects)
 
         big_text = ''
         big_text += f'Database version: {self.postgresql_version}\n'
@@ -1721,7 +1719,6 @@ class GwAdminButton:
         
         
         # uri = 'postgresql://geonbt:Baron.2022@104.247.163.118:5432?sslmode=disable&dbname=gis&schema=project&project=kepsuticmesu'
-        print(uri)
         try:
             QgsProject.instance().read(uri)
         except:
