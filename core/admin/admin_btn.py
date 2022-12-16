@@ -822,7 +822,6 @@ class GwAdminButton:
             partial(tools_qt.get_folder_path, self.dlg_readsql, "custom_path_folder"))
         self.cmb_connection.currentIndexChanged.connect(partial(self._event_change_connection))
         self.cmb_connection.currentIndexChanged.connect(partial(self._set_info_project))
-        self.cmb_geon_connection.currentIndexChanged.connect(partial(self._event_change_connection_geon))
         self.cmb_geon_connection.currentIndexChanged.connect(partial(self._set_open_project))
         self.cmb_geon_project_list.currentIndexChanged.connect(partial(self._choose_geon_project))    
         
@@ -1350,10 +1349,6 @@ class GwAdminButton:
 
     """ Create new connection when change combo connections """
 
-    def _event_change_connection_geon(self):
-        """"""
-
-
     def _event_change_connection(self):
         """"""
 
@@ -1654,6 +1649,9 @@ class GwAdminButton:
 
     def _set_open_project(self):
         """"""
+        self.dlg_readsql.btn_geon_open_projet.setEnabled(False)
+        self.dlg_readsql.lbl_geon_status.setStyleSheet("QLabel {color:red;}")
+        tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, '')
         self.postgresql_version = tools_db.get_pg_version()
         self.postgis_version = tools_db.get_postgis_version()
         selected_con = self.cmb_geon_connection.currentText()
@@ -1678,10 +1676,13 @@ class GwAdminButton:
             rows = json.loads(response.text)
             for row in rows:
                 elem = [row, row]
-                self.geon_projects.append(elem)            
+                self.geon_projects.append(elem)  
+            tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, '')     
+            self.dlg_readsql.btn_geon_open_projet.setEnabled(True)     
         except:
-            print('that doesnt work')
-            elem = ['','']
+            tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, 'The connection is wrong or there is no "project" schema in your database')
+            elem = ['','']   
+            self.dlg_readsql.btn_geon_open_projet.setEnabled(False)     
             self.geon_projects.append(elem)
 
         big_text = ''
@@ -1714,15 +1715,21 @@ class GwAdminButton:
         sslmode = self.geon_dict['sslmode']
         database = self.geon_dict['database']
         project = self.geon_project_name
+        tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, '')
+        
         
         uri = f'postgresql://{username}:{password}@{host}:{port}?sslmode={sslmode}&dbname={database}&schema=project&project={project}'
         
         
         # uri = 'postgresql://geonbt:Baron.2022@104.247.163.118:5432?sslmode=disable&dbname=gis&schema=project&project=kepsuticmesu'
         try:
-            QgsProject.instance().read(uri)
+            QgsProject.instance().read(uri)            
+            # Load Giswater plugin
+            file_name = os.path.basename(self.plugin_dir)
+            reloadPlugin(f"{file_name}")
+            tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, '')
         except:
-            print('something went horribly wrong')
+            tools_qt.set_widget_text(self.dlg_readsql, self.dlg_readsql.lbl_geon_status, 'something went horribly wrong')
         
 
     def _set_info_project(self):
