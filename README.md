@@ -1,1 +1,1 @@
-# geon_giswater
+# geon_qgis_plugin
