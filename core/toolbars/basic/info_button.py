@@ -37,6 +37,7 @@ class GwInfoButton(GwMaptool):
         self.block_signal = False
         self.previous_info_feature = None
         self.action_name = action_name
+        self.operation_index = 0
 
 
     # region QgsMapTools inherited
@@ -50,6 +51,7 @@ class GwInfoButton(GwMaptool):
             tools_gw.reset_rubberband(self.rubber_band)
             self.action.trigger()
             return
+        
 
 
     def canvasMoveEvent(self, event):
@@ -57,7 +59,6 @@ class GwInfoButton(GwMaptool):
 
 
     def canvasReleaseEvent(self, event):
-
         self._get_info(event)
 
 
@@ -103,7 +104,7 @@ class GwInfoButton(GwMaptool):
         except(TypeError, KeyError):
             self.iface.actionPan().trigger()
             return False
-
+        
         return point
 
 
@@ -301,7 +302,6 @@ class GwInfoButton(GwMaptool):
 
 
     def _get_info(self, event):
-
         for rb in self.rubberband_list:
             tools_gw.reset_rubberband(rb)
 
